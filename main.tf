@@ -2,7 +2,7 @@ provider "aws" {
   region = "your_aws_region"
 }
 
-module "vpc_networking" {
+module "vpc" {
   source = "./modules/vpc"
 }
 module "ec2" {
