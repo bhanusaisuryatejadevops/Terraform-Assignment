@@ -38,7 +38,6 @@ resource "aws_instance" "my_ec2_instance" {
   ami           = var.ec2_ami
   instance_type = var.ec2_instance_type
   subnet_id     = var.ec2_subnet_id
-  key_name      = aws_key_pair.my_key_pair.key_name
   security_groups = var.ec2_security_group_id
 
   tags = {
