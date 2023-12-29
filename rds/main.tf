@@ -6,7 +6,7 @@ resource "aws_db_instance" "my_rds" {
   instance_class       = var.rds_instance_class 
   name                 = "my-rds"
   username             = var.rds_username  
-  password             = var.rds_password  
+  password             = var.random_password.password.result
   parameter_group_name = "default.postgres13" 
   skip_final_snapshot  = true
 
