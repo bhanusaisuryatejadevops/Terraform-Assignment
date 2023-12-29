@@ -1,9 +1,15 @@
-# Create a key pair for SSH authentication
 resource "aws_key_pair" "my_key_pair" {
   key_name   = var.ec2_key_name
   public_key = file("C:\Users\ADMIN/.ssh/id_rsa.pub")
 }
-# Create a security group allowing SSH access
+resource "tls_private_key" "ec2key" {
+    algorithm = "RSA"
+    rsa_bits = 4096
+}
+resource "local_file" "ec2pemkey" {
+    filename = "ec2-key.pem"
+    content = tls_private_key.ec2key.private_key_pem
+}
 resource "aws_security_group" "ssh_sg" {
   name        = "ssh-security-group"
   description = "Allow SSH inbound traffic"
