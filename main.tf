@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "your_aws_region"
+  region = "region"
 }
 
 module "vpc" {
