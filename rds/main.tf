@@ -1,51 +1,22 @@
-resource "aws_db_instance" "my_rds" {
-  allocated_storage    = var.rds_allocated_storage
+resource "aws_db_instance" "defalut" {
+  allocated_storage    = 10
   storage_type         = "gp2"
-  engine               = "postgres"
-  engine_version       = var.rds_engine_version  
-  instance_class       = var.rds_instance_class 
-  name                 = "my-rds"
-  username             = var.rds_username  
+  engine               = "var.engine
+  engine_version       = var.engine_version  
+  instance_class       = var.instanceclass 
+  name                 = "mydb"
+  username             = var.username  
   password             = var.random_password.password.result
-  parameter_group_name = "default.postgres13" 
+  parameter_group_name = "postgresgroup" 
   skip_final_snapshot  = true
+  db_subnet_group_name = aws_db_subnet_group.dbsubnetgroup.name
 
-  # Configuration for the subnet group
-  subnet_group_name = "private-subnet-group"
-  
-  # Security Group for RDS instance
-  vpc_security_group_ids = [
-    aws_security_group.rds_security_group.id,
-  ]
+  resource "aws_db_subnet_group" "dbsubnetgroup" {
+    
+  name       = "dbsubgroup"
+  subnet_ids = var.dbsubgrp
 
   tags = {
-    Name = "ExampleRDSInstance"
-  }
-}
-
-# Creating a security group for RDS
-resource "aws_security_group" "rds_security_group" {
-  vpc_id = aws_vpc.main_vpc.id 
-
-  # Ingress rule for PostgreSQL traffic within the security group
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.rds_security_group.id]  
-
-    description = "PostgreSQL traffic within the security group"
-  }
-
-  # Egress rule to allow outbound traffic
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
-
-  tags = {
-    Name = "RDS-Security-Group"
+    Name = "My DB subnet group"
   }
 }
