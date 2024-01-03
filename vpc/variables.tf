@@ -12,5 +12,5 @@ variable "prisubnet" {
 
 variable "azones" {
   description = "Availability zones"
-  default = ["us-west-2a","us-west-2b","us-west-2c"]
+  default = ["us-west-2a","us-west-2b","ap-south-1"]
 }
