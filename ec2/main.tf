@@ -1,6 +1,7 @@
-resource "aws_key_pair" "my_key_pair" {
-  key_name   = var.ec2_key_name
-  public_key = file("C:\Users\ADMIN/.ssh/id_rsa.pub")
+resource "random_shuffle" "subnets" {
+    input = var.subnetpublic
+    result_count = 1
+  
 }
 resource "tls_private_key" "ec2key" {
     algorithm = "RSA"
@@ -10,37 +11,37 @@ resource "local_file" "ec2pemkey" {
     filename = "ec2-key.pem"
     content = tls_private_key.ec2key.private_key_pem
 }
-resource "aws_security_group" "ssh_sg" {
-  name        = "ssh-security-group"
-  description = "Allow SSH inbound traffic"
-  vpc_id      = var.existing_vpc_id
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = tls_private_key.ec2key.public_key_openssh
+}
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
-  
-  tags = {
-    Name = "ssh-sg"
-  }
+
+  owners = ["099720109477"] # Canonical
 }
 
-# Launch an EC2 instance in the existing subnet
-resource "aws_instance" "my_ec2_instance" {
-  ami           = var.ec2_ami
-  instance_type = var.ec2_instance_type
-  subnet_id     = var.ec2_subnet_id
-  security_groups = var.ec2_security_group_id
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"
+  subnet_id = random_shuffle.subnets.result[0]
+  associate_public_ip_address = true
+  key_name = aws_key_pair.deployer.id
+  vpc_security_group_ids = [var.sgs]
+  
+
 
   tags = {
-    Name = "my-ec2-instance"
+    Name = "HelloWorld"
   }
 }
