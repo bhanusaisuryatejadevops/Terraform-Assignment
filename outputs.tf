@@ -1,9 +1,14 @@
-output "ec2_instance_ip" {
-  description = "Public IP address of the created EC2 instance"
+output "vpc_id" {
+  description = "The ID of the created VPC"
+  value       = module.vpc_module.vpc_id
+}
+
+output "ec2_instance_details" {
+  description = "Details of the created EC2 instance"
   value       = module.ec2.public_ip
 }
 
-output "rds_instance_endpoint" {
-  description = "Endpoint of the created RDS instance"
-  value       = module.rds.endpoint
+output "rds_postgres_details" {
+  description = "Details of the created RDS PostgreSQL instance"
+  value       = module.rds
 }
